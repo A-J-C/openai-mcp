@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.2",
+  "name": "openai-mcp",
+  "display_name": "OpenAI — Images & Critique",
+  "version": "1.0.0",
+  "description": "Generate and edit images with gpt-image-1, and bounce ideas off ChatGPT for adversarial critique.",
+  "long_description": "Two capabilities in one package. Image generation: create or edit images using OpenAI's gpt-image-1 model — images appear inline in the conversation and are saved to ~/Downloads. ChatGPT critique: send your reasoning to GPT-4o for a structured second opinion (Flaws, Blind spots, Alternatives, Counterarguments, Strengths, Overall assessment). One API key, zero other configuration.",
+  "author": {
+    "name": "Alex Craig"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/dist/index.js"],
+      "env": {
+        "OPENAI_API_KEY": "${user_config.openai_api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "openai_api_key": {
+      "type": "string",
+      "title": "OpenAI API Key",
+      "description": "Get your key from https://platform.openai.com/api-keys. Your organisation must have access to gpt-image-1 (verify at platform.openai.com/settings/organization/general).",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools_generated": true,
+  "keywords": ["openai", "image-generation", "gpt-image-1", "chatgpt", "critique"],
+  "license": "MIT",
+  "compatibility": {
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}
