@@ -39,29 +39,22 @@ STUB="## [Unreleased]
 
 "
 # Insert stub after the first line (the # Changelog heading) followed by a blank line
-python3 - <<'PYEOF'
-import re, sys
+python3 - "$CHANGELOG" <<'PYEOF'
+import sys
 
-with open("${CHANGELOG}", "r") as f:
+changelog = sys.argv[1]
+with open(changelog, "r") as f:
     content = f.read()
 
-stub = """## [Unreleased]
+stub = "## [Unreleased]\n\n### Added\n\n- _nothing yet_\n\n\n"
 
-### Added
-
-- _nothing yet_
-
-"""
-
-# Insert after the header block (first blank line after the first heading)
 insert_at = content.find("\n## [")
 if insert_at == -1:
-    # No existing release entry yet — append
     content = content.rstrip() + "\n\n" + stub
 else:
     content = content[:insert_at] + "\n" + stub + content[insert_at + 1:]
 
-with open("${CHANGELOG}", "w") as f:
+with open(changelog, "w") as f:
     f.write(content)
 PYEOF
 
