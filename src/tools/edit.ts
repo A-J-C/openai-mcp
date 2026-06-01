@@ -10,9 +10,13 @@ export const editImageSchema = z.object({
       'Absolute path to the source image file. If the user pasted an image into the chat, use the file path Claude receives for that attachment.'
     ),
   size: z
-    .enum(['1024x1024', '1024x1536', '1536x1024'])
-    .default('1024x1024'),
-  quality: z.enum(['low', 'medium', 'high']).default('medium'),
+    .enum(['auto', '1024x1024', '1536x1024', '1024x1536', '2048x2048', '2048x1152', '3840x2160', '2160x3840'])
+    .default('auto')
+    .describe('Image dimensions. auto = model picks the best size, 1024x1024 = square, 1024x1536 = portrait, 1536x1024 = landscape, 2048x2048 = large square, 2048x1152 = wide landscape, 3840x2160 = 4K landscape, 2160x3840 = 4K portrait'),
+  quality: z
+    .enum(['auto', 'low', 'medium', 'high'])
+    .default('auto')
+    .describe('Generation quality. auto = model picks best quality (default), low = fast and cheap, medium = balanced, high = best quality but slower and costs more'),
 });
 
 export type EditImageInput = z.infer<typeof editImageSchema>;
@@ -35,6 +39,6 @@ export function editImage(input: EditImageInput): string {
   return JSON.stringify({
     job_id: jobId,
     status: 'pending',
-    message: `Edit started. Call poll_image_job with job_id "${jobId}" to check progress.`,
+    message: `Edit started. Call poll_image_job with job_id "${jobId}" to check progress. gpt-image-2 processes image inputs at high fidelity automatically.`,
   });
 }

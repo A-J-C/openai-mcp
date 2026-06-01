@@ -56,11 +56,11 @@ export function submitGenerateJob(params: {
     try {
       const openai = new OpenAI({ apiKey: getApiKey() });
       const response = await openai.images.generate({
-        model: 'gpt-image-1',
+        model: 'gpt-image-2',
         prompt: params.prompt,
         n: 1,
-        size: params.size as '1024x1024' | '1024x1536' | '1536x1024',
-        quality: params.quality as 'low' | 'medium' | 'high',
+        size: params.size as any,
+        quality: params.quality as 'auto' | 'low' | 'medium' | 'high',
       });
 
       const b64 = extractBase64(response.data?.[0]);
@@ -70,7 +70,7 @@ export function submitGenerateJob(params: {
       jobs.set(id, {
         id,
         status: 'complete',
-        result: { base64: b64, filePath, model: 'gpt-image-1', size: params.size },
+        result: { base64: b64, filePath, model: 'gpt-image-2', size: params.size },
         createdAt: Date.now(),
       });
     } catch (err) {
@@ -105,11 +105,11 @@ export function submitEditJob(params: {
       );
 
       const response = await openai.images.edit({
-        model: 'gpt-image-1',
+        model: 'gpt-image-2',
         image: imageFile,
         prompt: params.prompt,
         n: 1,
-        size: params.size as '1024x1024' | '1024x1536' | '1536x1024',
+        size: params.size as any,
       });
 
       const b64 = extractBase64(response.data?.[0]);
@@ -119,7 +119,7 @@ export function submitEditJob(params: {
       jobs.set(id, {
         id,
         status: 'complete',
-        result: { base64: b64, filePath, model: 'gpt-image-1', size: params.size },
+        result: { base64: b64, filePath, model: 'gpt-image-2', size: params.size },
         createdAt: Date.now(),
       });
     } catch (err) {

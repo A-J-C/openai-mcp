@@ -2,9 +2,9 @@
   "manifest_version": "0.2",
   "name": "openai-mcp",
   "display_name": "OpenAI",
-  "version": "1.0.1",
-  "description": "Generate and edit images, and get a second opinion from ChatGPT — all from your Claude conversation.",
-  "long_description": "Two capabilities in one package, one API key to set up.\n\nImage generation: describe what you want and Claude generates it using OpenAI's latest image model. Paste an image into the chat to edit it. Results appear inline in the conversation and are saved to ~/Downloads.\n\nChatGPT critique: stuck on a hard decision or want a second opinion? Claude can send its reasoning to GPT-4o and get back a structured adversarial critique — Flaws, Blind spots, Alternatives, Counterarguments, Strengths, and an Overall assessment.",
+  "version": "1.1.0",
+  "description": "Generate and edit images with gpt-image-2, and get a second opinion from ChatGPT — all from your Claude conversation.",
+  "long_description": "Two capabilities in one package, one API key to set up.\n\nImage generation: describe what you want and Claude generates it using OpenAI's gpt-image-2 image model. Paste an image into the chat to edit it — gpt-image-2 processes all image inputs at high fidelity automatically. Results appear inline in the conversation and are saved to ~/Downloads. Supports a wide range of resolutions including up to 4K (3840x2160), with 'auto' mode letting the model pick the best size and quality for your prompt.\n\nChatGPT critique: stuck on a hard decision or want a second opinion? Claude can send its reasoning to GPT-4o and get back a structured adversarial critique — Flaws, Blind spots, Alternatives, Counterarguments, Strengths, and an Overall assessment.",
   "author": {
     "name": "Alex Craig"
   },

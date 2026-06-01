@@ -13,7 +13,7 @@ import { critiqueBatchSchema, chatgptCritiqueBatch } from './tools/critiqueBatch
 import { evictOldJobs } from './lib/imageRunner';
 
 const server = new Server(
-  { name: 'openai-mcp', version: '1.0.0' },
+  { name: 'openai-mcp', version: '1.1.0' },
   { capabilities: { tools: {} } }
 );
 
@@ -22,22 +22,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'generate_image',
       description:
-        'Generate an image from a text description. Describe what you want — style, subject, mood, composition — and this tool produces it using OpenAI\'s image model. The image appears inline in the conversation and is saved to ~/Downloads. Generation takes 15–60 seconds; the tool returns a job_id immediately and you poll for the result.',
+        'Generate an image from a text description using OpenAI\'s gpt-image-2 model. Describe what you want — style, subject, mood, composition — and this tool produces it. The image appears inline in the conversation and is saved to ~/Downloads. Generation typically takes 15–90 seconds; complex prompts may take up to 2 minutes. The tool returns a job_id immediately and you poll for the result.',
       inputSchema: {
         type: 'object',
         properties: {
           prompt: { type: 'string', description: 'What to generate. Be descriptive: include subject, style, lighting, mood, and composition. Example: "A photorealistic corgi in a spacesuit floating above Earth, dramatic lighting, high detail"' },
           size: {
             type: 'string',
-            enum: ['1024x1024', '1024x1536', '1536x1024'],
-            default: '1024x1024',
-            description: '1024x1024 = square, 1024x1536 = portrait (tall), 1536x1024 = landscape (wide)',
+            enum: ['auto', '1024x1024', '1536x1024', '1024x1536', '2048x2048', '2048x1152', '3840x2160', '2160x3840'],
+            default: 'auto',
+            description: 'auto = model chooses the best size (default), 1024x1024 = square, 1024x1536 = portrait (tall), 1536x1024 = landscape (wide), 2048x2048 = large square, 2048x1152 = wide landscape, 3840x2160 = 4K landscape, 2160x3840 = 4K portrait',
           },
           quality: {
             type: 'string',
-            enum: ['low', 'medium', 'high'],
-            default: 'medium',
-            description: 'low = fast and cheap, medium = balanced (default), high = best quality, slower',
+            enum: ['auto', 'low', 'medium', 'high'],
+            default: 'auto',
+            description: 'auto = model chooses best quality (default), low = fast and cheap, medium = balanced, high = best quality, slower and costs more',
           },
         },
         required: ['prompt'],
@@ -47,7 +47,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'edit_image',
       description:
-        'Edit or modify an existing image. The user pastes or attaches an image to the conversation — use the file path Claude received for that attachment. Describe what to change: swap backgrounds, change colours, add or remove elements, restyle, etc. The result appears inline and is saved to ~/Downloads.',
+        'Edit or modify an existing image using OpenAI\'s gpt-image-2 model, which processes image inputs at high fidelity automatically. The user pastes or attaches an image to the conversation — use the file path Claude received for that attachment. Describe what to change: swap backgrounds, change colours, add or remove elements, restyle, etc. The result appears inline and is saved to ~/Downloads. Complex edits may take up to 2 minutes.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -58,13 +58,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           },
           size: {
             type: 'string',
-            enum: ['1024x1024', '1024x1536', '1536x1024'],
-            default: '1024x1024',
+            enum: ['auto', '1024x1024', '1536x1024', '1024x1536', '2048x2048', '2048x1152', '3840x2160', '2160x3840'],
+            default: 'auto',
+            description: 'auto = model chooses the best size (default), 1024x1024 = square, 1024x1536 = portrait (tall), 1536x1024 = landscape (wide), 2048x2048 = large square, 2048x1152 = wide landscape, 3840x2160 = 4K landscape, 2160x3840 = 4K portrait',
           },
           quality: {
             type: 'string',
-            enum: ['low', 'medium', 'high'],
-            default: 'medium',
+            enum: ['auto', 'low', 'medium', 'high'],
+            default: 'auto',
+            description: 'auto = model chooses best quality (default), low = fast and cheap, medium = balanced, high = best quality, slower and costs more',
           },
         },
         required: ['prompt', 'image_path'],
@@ -204,7 +206,7 @@ setInterval(evictOldJobs, 60 * 60 * 1000);
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  process.stderr.write('openai-mcp v1.0.0 started\n');
+  process.stderr.write('openai-mcp v1.1.0 started\n');
 }
 
 main().catch((err) => {
