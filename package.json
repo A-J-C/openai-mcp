@@ -1,6 +1,6 @@
 {
   "name": "openai-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for OpenAI image generation (gpt-image-1) and ChatGPT critique",
   "main": "dist/index.js",
   "scripts": {

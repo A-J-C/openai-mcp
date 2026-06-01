@@ -22,22 +22,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'generate_image',
       description:
-        'Generate an image using OpenAI gpt-image-1. Returns a job_id immediately — use poll_image_job to retrieve the result once ready. Images are returned inline and saved to ~/Downloads.',
+        'Generate an image from a text description. Describe what you want — style, subject, mood, composition — and this tool produces it using OpenAI\'s image model. The image appears inline in the conversation and is saved to ~/Downloads. Generation takes 15–60 seconds; the tool returns a job_id immediately and you poll for the result.',
       inputSchema: {
         type: 'object',
         properties: {
-          prompt: { type: 'string', description: 'Description of the image to generate' },
+          prompt: { type: 'string', description: 'What to generate. Be descriptive: include subject, style, lighting, mood, and composition. Example: "A photorealistic corgi in a spacesuit floating above Earth, dramatic lighting, high detail"' },
           size: {
             type: 'string',
             enum: ['1024x1024', '1024x1536', '1536x1024'],
             default: '1024x1024',
-            description: 'Image dimensions: square, portrait, or landscape',
+            description: '1024x1024 = square, 1024x1536 = portrait (tall), 1536x1024 = landscape (wide)',
           },
           quality: {
             type: 'string',
             enum: ['low', 'medium', 'high'],
             default: 'medium',
-            description: 'Generation quality — higher is slower and costs more',
+            description: 'low = fast and cheap, medium = balanced (default), high = best quality, slower',
           },
         },
         required: ['prompt'],
@@ -47,14 +47,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'edit_image',
       description:
-        'Edit an existing image using OpenAI gpt-image-1. Pass the absolute path to the source image — if the user pasted an image into the chat, use the file path Claude received. Returns a job_id — use poll_image_job to retrieve the result.',
+        'Edit or modify an existing image. The user pastes or attaches an image to the conversation — use the file path Claude received for that attachment. Describe what to change: swap backgrounds, change colours, add or remove elements, restyle, etc. The result appears inline and is saved to ~/Downloads.',
       inputSchema: {
         type: 'object',
         properties: {
-          prompt: { type: 'string', description: 'Description of the edit to make' },
+          prompt: { type: 'string', description: 'What to change about the image. Example: "Replace the background with a sunset over the ocean" or "Make it look like a watercolour painting"' },
           image_path: {
             type: 'string',
-            description: 'Absolute path to the source image file',
+            description: 'Absolute path to the source image. Use the file path from the user\'s attachment — Claude receives this automatically when an image is pasted into the chat.',
           },
           size: {
             type: 'string',
@@ -74,7 +74,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'poll_image_job',
       description:
-        'Check the status of an image generation or edit job. Returns pending / complete / failed. When complete, the image is returned inline in the conversation and the file path in ~/Downloads is included.',
+        'Check whether an image generation or edit job has finished. Call this every few seconds after generate_image or edit_image returns a job_id. Returns "pending" while still running, "complete" with the image shown inline and saved to ~/Downloads, or "failed" with an error message.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -90,23 +90,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'chatgpt_critique',
       description:
-        'Send your reasoning to ChatGPT for adversarial critique. Returns a structured second opinion: Flaws, Blind spots, Alternative approaches, Counterarguments, Strengths, Overall assessment. Use this on hard decisions, plans, or analysis before committing.',
+        'Get a second opinion from ChatGPT on any reasoning, plan, or decision. Useful when you want an independent perspective — especially on hard calls, strategies, or arguments where Claude might have blind spots. ChatGPT responds with a structured adversarial critique: Flaws, Blind spots, Alternative approaches, Counterarguments, Strengths, and an Overall assessment. Use this proactively on important work before finalising.',
       inputSchema: {
         type: 'object',
         properties: {
           thinking: {
             type: 'string',
             minLength: 50,
-            description: 'The reasoning, plan, or argument to critique',
+            description: 'The reasoning, plan, recommendation, or argument to critique. Write it out fully — the more detail, the more useful the critique.',
           },
           context: {
             type: 'string',
-            description: 'Optional background context (domain, constraints, goals)',
+            description: 'Background the critic needs: what domain is this, what constraints apply, what is the goal. Example: "This is a pricing strategy for a B2B SaaS product targeting enterprise security teams."',
           },
           model: {
             type: 'string',
             default: 'gpt-4o',
-            description: 'GPT model to use (default: gpt-4o)',
+            description: 'Which GPT model to use. gpt-4o (default) is fast and capable. Use o1 or o3 for harder reasoning tasks.',
           },
         },
         required: ['thinking'],
@@ -116,7 +116,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'chatgpt_critique_batch',
       description:
-        'Critique multiple pieces of reasoning in parallel — useful for comparing options or reviewing several proposals at once. Returns an array of { name, critique } objects.',
+        'Critique several options or proposals at once. Pass an array of named items — each gets its own independent critique from ChatGPT in parallel. Useful when comparing approaches (Option A vs B vs C), reviewing multiple candidates, or stress-testing several arguments simultaneously. Returns one structured critique per item.',
       inputSchema: {
         type: 'object',
         properties: {
