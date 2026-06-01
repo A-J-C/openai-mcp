@@ -13,7 +13,9 @@
     "entry_point": "server/dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/dist/index.js"],
+      "args": [
+        "${__dirname}/server/dist/index.js"
+      ],
       "env": {
         "OPENAI_API_KEY": "${user_config.openai_api_key}"
       }
@@ -29,7 +31,13 @@
     }
   },
   "tools_generated": true,
-  "keywords": ["openai", "image-generation", "gpt-image-1", "chatgpt", "critique"],
+  "keywords": [
+    "openai",
+    "image-generation",
+    "gpt-image-1",
+    "chatgpt",
+    "critique"
+  ],
   "license": "MIT",
   "compatibility": {
     "runtimes": {
